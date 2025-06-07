@@ -18,7 +18,7 @@ function App() {
     const createPost = async e => {
         e.preventDefault();
 
-        const res = await fetch('http://localhost:8000/api/posts', {
+        const res = await fetch('http://localhost:8000/api/posts/', {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -46,15 +46,20 @@ function App() {
 
         const createdComment = await response.json();
 
-        comment = ''
-
         setPosts(posts.map(p => {
             if (p.id === post_id) {
-                p.comments.push(createdComment)
+              return {
+                ...p,
+                comments: [...(p.comments || []), createdComment], // Safely handle undefined
+              };
             }
-
             return p;
-        }))
+    }));
+
+        
+    
+
+
     }
     return (
         <div className="App container">
@@ -86,15 +91,11 @@ function App() {
                                                        onChange={e => comment = e.target.value}/>
                                             </form>
                                         </div>
-                                        {post.comments && post.comments.map(
-                                            comment => {
-                                                return (
-                                                    <div className="card-footer py-3" key={comment.id}>
-                                                        {comment.text}
-                                                    </div>
-                                                )
-                                            }
-                                        )}
+                                            {post.comments && post.comments.map((comment) => (
+                                              <div className="card-footer py-3" key={comment.id}>
+                                                {comment.text}
+                                              </div>
+                                            ))}
                                     </div>
                                 </div>
                             )
